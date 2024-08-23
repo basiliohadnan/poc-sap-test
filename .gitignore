@@ -2,3 +2,4 @@
 obj/
 bin/
 /ConsincoTests/Helpers/Report/ConnectionAuth.str
+/SAPTests/Helpers/Report/ConnectionAuth.str
