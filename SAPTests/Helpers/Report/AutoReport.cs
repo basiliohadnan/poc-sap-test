@@ -61,7 +61,7 @@ namespace Starline
             ReportTitle = "Evolução dos Casos de Teste Automatizados" + " - " + DateTime.Now.ToString("dd'/'MM'/'yyyy");
 
             string appPath = GetAppPath();
-            string relativePathToFile = Path.Combine("..", "..", "..", "..", "ConsincoTests", "secrets.json");
+            string relativePathToFile = Path.Combine("..", "..", "..", "..", "SAPTests", "secrets.json");
             string secretsFilePath = FileHelper.GetFullPathFromBase(relativePathToFile);
             string secretsJson = File.ReadAllText(secretsFilePath);
             dynamic secrets = JsonConvert.DeserializeObject(secretsJson);

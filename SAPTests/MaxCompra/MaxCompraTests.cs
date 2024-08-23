@@ -17,7 +17,7 @@ namespace SAPTests.MaxCompra
         public MaxCompraTests()
         {
             sheet = "MaxComprasInit";
-            dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "ConsincoTests", "dataset", "GerenciadordeCompras.xlsx"));
+            dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "GerenciadordeCompras.xlsx"));
             GetAppConfig();
             elementHandler = new ElementHandler();
         }
@@ -79,7 +79,7 @@ namespace SAPTests.MaxCompra
                 $"Tentando {stepDescription}", paramName: paramName, paramValue: paramValue);
             Initialize();
             printFileName = Global.processTest.CaptureWholeScreen();
-            string welcomeWindowName = "Conexão de Sistemas Consinco";
+            string welcomeWindowName = "Conexão de Sistemas SAP";
             WindowsElement welcomeWindow = FindElementByName(welcomeWindowName);
             Assert.IsNotNull(welcomeWindow);
             if (welcomeWindow == null)

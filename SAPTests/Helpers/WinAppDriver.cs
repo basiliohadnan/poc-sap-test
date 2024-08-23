@@ -10,7 +10,7 @@ namespace SAPTests.Helpers
 {
     public class WinAppDriver
     {
-        protected string dataSetFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "ConsincoTests", "dataset", "GerenciadordeCompras.xlsx"));
+        protected string dataSetFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "GerenciadordeCompras.xlsx"));
 
         protected void StartWinAppDriver()
         {
@@ -60,7 +60,7 @@ namespace SAPTests.Helpers
         protected void InitializeAppSession(string appPath)
         {
             Process process = Process.Start(appPath);
-            string appName = "Conexão de Sistemas Consinco";
+            string appName = "Conexão de Sistemas SAP";
             WindowsElement appWindow = FindElementByName(appName, session: Global.winSession);
             Assert.IsNotNull(appWindow);
 
