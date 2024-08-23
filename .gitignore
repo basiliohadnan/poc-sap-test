@@ -1,3 +1,4 @@
 .vs/
 obj/
 bin/
+/ConsincoTests/Helpers/Report/ConnectionAuth.str
