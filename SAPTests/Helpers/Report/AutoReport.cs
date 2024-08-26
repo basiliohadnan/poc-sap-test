@@ -24,10 +24,11 @@ namespace Starline
 {
     public class AutoReport
     {
-        public bool mostrarLog { get; set; }
-
         static ConnPGSQL Conn;
         public bool Connected = false;
+        public Dictionary<string, Dictionary<string, int>> TurnList;
+
+        public bool mostrarLog { get; set; }
         public string URLDomain { get; set; }
         public string ResponsibleAnalyst { get; set; }
         public int CstID { get; set; }
@@ -41,19 +42,14 @@ namespace Starline
         public string TestType { get; set; }
         public string TestDesc { get; set; }
         public string AnalystName { get; set; }
-        public string PreCondition { get; set; }
-        public string PostCondition { get; set; }
-        public string InputData { get; set; }
         public int RptID { get; set; }
         public int ReportID { get; set; }
         public string ReportTitle { get; set; }
         public string ReportObs { get; set; }
         public string ReportProfile { get; set; }
-        public int LgsID { get; set; }
         public string StepName { get; set; }
         public int StepNumber { get; set; }
         public int StepTurn { get; set; }
-        public Dictionary<string, Dictionary<string, int>> TurnList;
 
         public AutoReport()
         {
@@ -356,27 +352,6 @@ namespace Starline
         }
 
         // Compatibility with older codes
-        public int NovoTurno(string stringOne, string stringTwo)
-        {
-            try
-            {
-                TurnList[stringOne][stringTwo] += 1;
-                return TurnList[stringOne][stringTwo];
-            }
-            catch
-            {
-                if (TurnList.ContainsKey(stringOne))
-                {
-                    TurnList[stringOne].Add(stringTwo, 1);
-                }
-                else
-                {
-                    TurnList.Add(stringOne, new Dictionary<string, int>() { { stringTwo, 1 } });
-                }
-                return TurnList[stringOne][stringTwo];
-            }
-        }
-
         public int LocalTurn(string stringOne, string stringTwo, string mode = "add")
         {
             try
