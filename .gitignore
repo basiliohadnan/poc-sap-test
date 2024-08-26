@@ -2,3 +2,4 @@
 obj/
 bin/
 /SAPTests/Helpers/Report/ConnectionAuth.str
+/SAPTests/secrets.json
