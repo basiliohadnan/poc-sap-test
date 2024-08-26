@@ -43,7 +43,7 @@ public class ExcelHelper
         }
     }
 
-    public static void UpdateTestResult(string dataSetFilePath, string sheet, int testId, string result)
+    public static void UpdateTestResult(string dataSetFilePath, string sheet, string testName, string result)
     {
         using (var workbook = new XLWorkbook(dataSetFilePath))
         {
@@ -59,8 +59,8 @@ public class ExcelHelper
             var rows = worksheet.RowsUsed().Skip(1);
             foreach (var row in rows)
             {
-                // Assuming the testId is in column B
-                if (int.TryParse(row.Cell(2).GetValue<string>().Trim(), out int cellTestId) && cellTestId == testId)
+                // Assuming the testName is in column C
+                if (string.Equals(row.Cell(3).GetValue<string>().Trim(), testName, StringComparison.OrdinalIgnoreCase))
                 {
                     row.Cell(resultColumn.Value).Value = result;
                     break;

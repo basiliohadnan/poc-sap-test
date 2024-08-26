@@ -20,7 +20,7 @@ namespace SAPTests.MaxCompra.Administracao.Compras
             return method.Name;
         }
 
-        public static string SetExecutionControl(string dataFilePath, string sheet, int testId, string queryName)
+        public static string SetExecutionControl(string dataFilePath, string sheet, string testName)
         {
             string executionType;
             try
@@ -30,7 +30,7 @@ namespace SAPTests.MaxCompra.Administracao.Compras
             catch
             {
                 executionType = "2";
-                ExcelHelper.UpdateTestResult(dataFilePath, sheet, testId, "");
+                ExcelHelper.UpdateTestResult(dataFilePath, sheet, testName, "");
             }
 
             if (Global.firstRun)
@@ -44,20 +44,19 @@ namespace SAPTests.MaxCompra.Administracao.Compras
 
             Global.dataFetch = new DataFetch(ConnType: "Excel", ConnXLS: dataFilePath);
             Global.dataFetch.NewQuery(
-                QueryName: queryName,
-                QueryText: $"SELECT * FROM [{sheet}$] WHERE testId = {testId}"
+                QueryName: testName,
+                QueryText: $"SELECT * FROM [{sheet}$] WHERE testName = {testName}"
             );
-            string result = Global.dataFetch.GetValue("RESULT", queryName);
+            string result = Global.dataFetch.GetValue("RESULT", testName);
             return result;
         }
 
-        public static void StartTest(DataFetch dataFetch, string queryName)
+        public static void StartTest(DataFetch dataFetch, string testName)
         {
-            string scenarioName = dataFetch.GetValue("SCENARIONAME", queryName);
-            string testName = dataFetch.GetValue("TESTNAME", queryName);
-            string testType = dataFetch.GetValue("TESTTYPE", queryName);
-            string analystName = dataFetch.GetValue("ANALYSTNAME", queryName);
-            string testDesc = dataFetch.GetValue("TESTDESC", queryName);
+            string scenarioName = dataFetch.GetValue("SCENARIONAME", testName);
+            string testType = dataFetch.GetValue("TESTTYPE", testName);
+            string analystName = dataFetch.GetValue("ANALYSTNAME", testName);
+            string testDesc = dataFetch.GetValue("TESTDESC", testName);
             int reportID;
             try
             {
@@ -66,7 +65,7 @@ namespace SAPTests.MaxCompra.Administracao.Compras
             }
             catch
             {
-                reportID = int.Parse(dataFetch.GetValue("REPORTID", queryName));
+                reportID = int.Parse(dataFetch.GetValue("REPORTID", testName));
             }
             Global.processTest.StartTest(Global.customerName, Global.suiteName, scenarioName, testName, testType, analystName, testDesc, reportID);
         }
@@ -494,8 +493,8 @@ namespace SAPTests.MaxCompra.Administracao.Compras
                     Global.processTest.DoStep("Maximizar janela");
                     Global.processTest.DoStep("Preencher quantidade de compra dos produtos");
                     Global.processTest.DoStep("Validar quantidade de compra dos produtos");
-                    break;     
-                
+                    break;
+
                 case "GerarLoteComDoisFornecedoresCompradorFinalizar":
                     DefineSteps("RealizarLogin");
                     DefineSteps("Abrir Gerenciador de Compras");
@@ -512,13 +511,13 @@ namespace SAPTests.MaxCompra.Administracao.Compras
                 case "ValidarBloqueioSessaoSimulaneaMesmoLoteCompleto":
                     DefineSteps("ValidarBloqueioSessaoSimulaneaMesmoLoteSessaoUm");
                     DefineSteps("ValidarBloqueioSessaoSimulaneaMesmoLoteSessaoDois");
-                    break;            
-                
+                    break;
+
                 case "ValidarBloqueioSessaoSimulaneaMesmoLoteSessaoUm":
                     DefineSteps("Criar e incluir lote loja");
                     Global.processTest.DoStep("Resgatar id do lote");
                     break;
-                           
+
                 case "ValidarBloqueioSessaoSimulaneaMesmoLoteSessaoDois":
                     DefineSteps("RealizarLogin");
                     DefineSteps("Abrir Gerenciador de Compras");

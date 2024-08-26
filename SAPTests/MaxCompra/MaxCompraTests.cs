@@ -17,7 +17,7 @@ namespace SAPTests.MaxCompra
         public MaxCompraTests()
         {
             sheet = "MaxComprasInit";
-            dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "GerenciadordeCompras.xlsx"));
+            dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "SAP.xlsx"));
             GetAppConfig();
             elementHandler = new ElementHandler();
         }
@@ -168,29 +168,28 @@ namespace SAPTests.MaxCompra
             ValidateMainScreenShown();
         }
 
-        //[TestMethod, TestCategory("done")]
-        public void RealizarLogin()
+        [TestMethod, TestCategory("done")]
+        public void AbrirAplicacao()
         {
-            int testId = 1;
-            string queryName = TestHandler.GetCurrentMethodName();
-            if (TestHandler.SetExecutionControl(dataFilePath, sheet, testId, queryName) == "")
+            string testName = TestHandler.GetCurrentMethodName();
+            if (TestHandler.SetExecutionControl(dataFilePath, sheet, testName) == "")
             {
-                TestHandler.StartTest(Global.dataFetch, queryName);
+                TestHandler.StartTest(Global.dataFetch, testName);
                 try
                 {
-                    TestHandler.DoTest(Global.dataFetch, queryName);
-                    TestHandler.DefineSteps(queryName);
-                    Login(Global.dataFetch, queryName);
-                    ExcelHelper.UpdateTestResult(dataFilePath, sheet, testId, "passed");
+                    TestHandler.DoTest(Global.dataFetch, testName);
+                    TestHandler.DefineSteps(testName);
+                    Login(Global.dataFetch, testName);
+                    ExcelHelper.UpdateTestResult(dataFilePath, sheet, testName, "passed");
                 }
                 catch (Exception ex)
                 {
-                    ExcelHelper.UpdateTestResult(dataFilePath, sheet, testId, "failed");
+                    ExcelHelper.UpdateTestResult(dataFilePath, sheet, testName, "failed");
                     throw;
                 }
                 finally
                 {
-                    TestHandler.EndTest(Global.dataFetch, queryName);
+                    TestHandler.EndTest(Global.dataFetch, testName);
                 }
             }
         }
