@@ -1,22 +1,21 @@
 ﻿using SAPTests.Helpers;
-using SAPTests.MaxCompra.Administracao.Compras;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium.Appium.Windows;
 using Starline;
 using static SAPTests.Helpers.ElementHandler;
 
-namespace SAPTests.MaxCompra
+namespace SAPTests.LoginTests
 {
     [TestClass]
-    public class MaxCompraTests : WinAppDriver
+    public class LoginTests : WinAppDriver
     {
         protected string dataFilePath;
         protected ElementHandler elementHandler;
         protected string sheet;
 
-        public MaxCompraTests()
+        public LoginTests()
         {
-            sheet = "MaxComprasInit";
+            sheet = "login";
             dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "SAP.xlsx"));
             GetAppConfig();
             elementHandler = new ElementHandler();
@@ -24,15 +23,15 @@ namespace SAPTests.MaxCompra
 
         private void GetAppConfig()
         {
-            string queryName = "GetAppConfig";
+            string testName = "GetAppConfig";
             DataFetch dataFetch = new DataFetch(ConnType: "Excel", ConnXLS: dataFilePath);
             dataFetch.NewQuery(
-                QueryName: queryName,
-                    QueryText: $"SELECT * FROM [Config$]"
+                QueryName: testName,
+                    QueryText: $"SELECT * FROM [config$]"
                     );
 
-            Global.appPath = dataFetch.GetValue("APPPATH", queryName);
-            Global.app = dataFetch.GetValue("APP", queryName);
+            Global.appPath = dataFetch.GetValue("APPPATH", testName);
+            Global.app = dataFetch.GetValue("APP", testName);
         }
 
         protected void Initialize()
@@ -42,21 +41,16 @@ namespace SAPTests.MaxCompra
             InitializeAppSession(Global.appPath);
         }
 
-        protected void Authenticate(string matricula, string filial = "000 - MATRIZ")
+        protected void Authenticate(string username, string password)
         {
-            FillField(matricula);
-            if (filial != "000 - MATRIZ")
-            {
-                WindowsElement lojasButton = FindElementByName("Open");
-                lojasButton.Click();
-                FillField(filial);
-            }
+            FillField(username);
+            KeyPresser.PressKey("TAB");
+            FillField(password);
             KeyPresser.PressKey("RETURN");
         }
 
-        protected void SetAppSession()
+        protected void SetAppSession(string className)
         {
-            string className = "Centura:MDIFrame";
             SetAppSession(className);
         }
 
@@ -92,21 +86,20 @@ namespace SAPTests.MaxCompra
             Global.processTest.EndStep(lgsID, printPath: printFileName, logMsg: expectedResult);
         }
 
-        private void FillCredentials(DataFetch dataFetch, string queryName, int filialIndex = 0)
+        private void FillCredentials(DataFetch dataFetch, string testName, int filialIndex = 0)
         {
-            string stepDescription = "Realizar login do analista";
-            string paramName = "matricula";
-            string matricula = dataFetch.GetValue("MATRICULA", queryName);
-            List<string> filiais = StringHandler.ParseStringToList(dataFetch.GetValue("FILIAIS", queryName));
-            string paramValue = matricula;
+            string stepDescription = "Realizar login do usuário";
+            string username = dataFetch.GetValue("USERNAME", testName);
+            string password = dataFetch.GetValue("PASSWORD", testName);
+            string className = dataFetch.GetValue("CLASSNAME", testName);
             string expectedResult = "Login efetuado.";
             string printFileName;
             int lgsID;
 
             lgsID = Global.processTest.StartStep(stepDescription, logMsg: $"Tentando {stepDescription}",
-                paramName: paramName, paramValue: paramValue);
-            Authenticate(matricula, filiais[filialIndex]);
-            SetAppSession();
+                paramName: "username, password", paramValue: $"{username}, {password}");
+            Authenticate(username, password);
+            SetAppSession(className);
 
             string appName = "Application";
             WindowsElement appMenu = FindElementByName(appName);
@@ -135,37 +128,10 @@ namespace SAPTests.MaxCompra
             }
         }
 
-        private void ValidateMainScreenShown()
-        {
-            string stepDescription = "Validar tela principal exibida";
-            string paramName = "";
-            string paramValue = "";
-            string expectedResult = "Tela principal exibida";
-            string printFileName;
-            int lgsID = Global.processTest.StartStep(stepDescription, logMsg: $"Tentando {stepDescription}", paramName: paramName, paramValue: paramValue);
-
-            try
-            {
-                string mainWindowClassName = "Centura:MDIFrame";
-                WindowsElement mainWindow = FindElementByClassName(mainWindowClassName);
-                Assert.IsNotNull(mainWindow);
-                printFileName = Global.processTest.CaptureWholeScreen();
-                Global.processTest.EndStep(lgsID, printPath: printFileName, logMsg: expectedResult);
-            }
-            catch
-            {
-                printFileName = Global.processTest.CaptureWholeScreen();
-                Global.processTest.EndStep(lgsID, status: "erro", printPath: printFileName, logMsg:
-                    $"Erro ao tentar {stepDescription}.");
-                throw new Exception($"Erro ao tentar {stepDescription}.");
-            }
-        }
-
         protected void Login(DataFetch dataFetch, string testName)
         {
             OpenApp();
             FillCredentials(dataFetch, testName);
-            ValidateMainScreenShown();
         }
 
         [TestMethod, TestCategory("done")]

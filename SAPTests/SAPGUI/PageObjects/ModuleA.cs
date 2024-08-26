@@ -1,20 +1,18 @@
 ﻿using SAPTests.Helpers;
-using SAPTests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
 using System.Collections.ObjectModel;
-using System.Linq;
 using static SAPTests.Helpers.ElementHandler;
 
-namespace SAPTests.MaxCompra.PageObjects.Administracao.Compras
+namespace SAPTests.PageObjects
 {
-    public class GerenciadorDeComprasPageObject
+    public class ModuleAPageObject
     {
         private WindowsElement window;
         private AppiumWebElement pane;
 
-        public GerenciadorDeComprasPageObject()
+        public ModuleAPageObject()
         {
             window = FindElementByName("Gerenciador de Compras");
             pane = window.FindElementByClassName("Centura:Form");
@@ -665,7 +663,7 @@ namespace SAPTests.MaxCompra.PageObjects.Administracao.Compras
                 }
                 else
                 {
-                    MouseHandler.Click(intialX, (intialY + height * (productIndex - 1)));
+                    MouseHandler.Click(intialX, intialY + height * (productIndex - 1));
                 }
             }
             catch
@@ -677,7 +675,7 @@ namespace SAPTests.MaxCompra.PageObjects.Administracao.Compras
                 }
                 else
                 {
-                    MouseHandler.Click(intialX, (intialY + height * (productIndex - 1)));
+                    MouseHandler.Click(intialX, intialY + height * (productIndex - 1));
                 }
             }
         }
