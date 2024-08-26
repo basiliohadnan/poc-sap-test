@@ -161,10 +161,10 @@ namespace SAPTests.MaxCompra
             }
         }
 
-        protected void Login(DataFetch dataFetch, string queryName, int filialIndex = 0)
+        protected void Login(DataFetch dataFetch, string testName)
         {
             OpenApp();
-            FillCredentials(dataFetch, queryName, filialIndex);
+            FillCredentials(dataFetch, testName);
             ValidateMainScreenShown();
         }
 
