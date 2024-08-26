@@ -4,7 +4,7 @@ using OpenQA.Selenium.Appium.Windows;
 using Starline;
 using static SAPTests.Helpers.ElementHandler;
 
-namespace SAPTests.LoginTests
+namespace SAPTests
 {
     [TestClass]
     public class LoginTests : WinAppDriver
@@ -16,7 +16,8 @@ namespace SAPTests.LoginTests
         public LoginTests()
         {
             sheet = "login";
-            dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "SAP.xlsx"));
+            //dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "SAP.xlsx"));
+            dataFilePath = @"C:\Users\basil\OneDrive\Documentos\GitHub\LIT\poc-sap-test\SAPTests\dataset";
             GetAppConfig();
             elementHandler = new ElementHandler();
         }
@@ -29,7 +30,6 @@ namespace SAPTests.LoginTests
                 QueryName: testName,
                     QueryText: $"SELECT * FROM [config$]"
                     );
-
             Global.appPath = dataFetch.GetValue("APPPATH", testName);
             Global.app = dataFetch.GetValue("APP", testName);
         }
