@@ -83,7 +83,7 @@ namespace SAPTests.Helpers
             return null;
         }
 
-        public static WindowsElement FindElementByName(string name, int milliseconds = 1000, WindowsDriver<WindowsElement> session = null)
+        public static WindowsElement FindElementByXpath(string name, int milliseconds = 1000, WindowsDriver<WindowsElement> session = null)
         {
             if (session == null)
             {
@@ -248,7 +248,7 @@ namespace SAPTests.Helpers
 
         public static void ConfirmWindow(string windowName, int buttonIndex = 0, int timeout = 1000)
         {
-            WindowsElement foundWindow = FindElementByName(windowName, timeout);
+            WindowsElement foundWindow = FindElementByXpath(windowName, timeout);
             ReadOnlyCollection<AppiumWebElement> buttons = foundWindow.FindElementsByClassName("Button");
             AppiumWebElement button = buttons[buttonIndex];
             button.Click();
