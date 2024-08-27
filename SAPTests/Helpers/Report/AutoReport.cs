@@ -61,23 +61,23 @@ namespace Starline
             string secretsFilePath = FileHelper.GetFullPathFromBase(relativePathToFile);
             string secretsJson = File.ReadAllText(secretsFilePath);
             dynamic secrets = JsonConvert.DeserializeObject(secretsJson);
-            string ConnServer = secrets.ConnServer;
-            int ConnPort = secrets.ConnPort;
-            string ConnDatabase = secrets.ConnDatabase;
-            string ConnUser = secrets.ConnUser;
-            string ConnPass = secrets.ConnPass;
+            //string ConnServer = secrets.ConnServer;
+            //int ConnPort = secrets.ConnPort;
+            //string ConnDatabase = secrets.ConnDatabase;
+            //string ConnUser = secrets.ConnUser;
+            //string ConnPass = secrets.ConnPass;
 
-            Conn = new ConnPGSQL(ConnServer, ConnPort, ConnDatabase, ConnUser, ConnPass);
-            try
-            {
-                Conn.OpenConn();
-                Connected = Conn.ConnOpened();
-                Conn.CloseConn();
-            }
-            catch
-            {
-                Connected = false;
-            }
+            //Conn = new ConnPGSQL(ConnServer, ConnPort, ConnDatabase, ConnUser, ConnPass);
+            //try
+            //{
+            //    Conn.OpenConn();
+            //    Connected = Conn.ConnOpened();
+            //    Conn.CloseConn();
+            //}
+            //catch
+            //{
+            //    Connected = false;
+            //}
 
             TurnList = new Dictionary<string, Dictionary<string, int>>();
         }
