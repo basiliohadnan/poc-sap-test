@@ -12,8 +12,6 @@ namespace SAPTests.Helpers
         public static string app;
         public static string screenshotsDirectory;
         public static ProcessTest processTest = new ProcessTest();
-        public static string customerName = "Customer";
-        public static string suiteName = "suiteName";
         public static bool firstRun = true;
         public static DataFetch dataFetch;
         public static string appPath;
