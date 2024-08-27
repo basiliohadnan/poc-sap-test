@@ -7,15 +7,17 @@ using static SAPTests.Helpers.ElementHandler;
 
 namespace SAPTests.PageObjects
 {
-    public class ModuleAPageObject
+    public class LoginPageObject
     {
         private WindowsElement window;
         private AppiumWebElement pane;
+        private string windowName = "X";
+        private string paneClassName = "Y";
 
-        public ModuleAPageObject()
+        public LoginPageObject()
         {
-            window = FindElementByName("Gerenciador de Compras");
-            pane = window.FindElementByClassName("Centura:Form");
+            window = FindElementByXPath(windowName);
+            pane = window.FindElementByClassName(paneClassName);
         }
 
         public void ExitWindow(string windowName, int buttonIndex = 0)
@@ -31,7 +33,7 @@ namespace SAPTests.PageObjects
                 case "Produtos Inativos":
                 case "Tributação":
                     ConfirmWindow(windowName, 0, 2000);
-                    FindElementByName("Restringe Empresa Loja");
+                    FindElementByXPath("Restringe Empresa Loja");
                     break;
                 case "Manutenção de Acordos Promocionais":
                     ConfirmWindow(windowName, 0, 3000);
@@ -95,7 +97,7 @@ namespace SAPTests.PageObjects
 
         public void AddDivisao(string divisao)
         {
-            var divisaoListItem = FindElementByName(divisao);
+            var divisaoListItem = FindElementByXPath(divisao);
             divisaoListItem.Click();
 
             BoundingRectangle addDivisaoButton = new BoundingRectangle(247, 195, 271, 220);
@@ -116,7 +118,7 @@ namespace SAPTests.PageObjects
             string windowName = "Seleção de Empresas do Lote";
             try
             {
-                FindElementByName(windowName);
+                FindElementByXPath(windowName);
 
                 // Adds first X items from the list of Lojas
                 BoundingRectangle empresasFirstItem = new BoundingRectangle(80, 391, 207, 404);
@@ -139,7 +141,7 @@ namespace SAPTests.PageObjects
             {
                 lojas.ForEach(loja =>
                 {
-                    WindowsElement lojaListItem = FindElementByName(loja);
+                    WindowsElement lojaListItem = FindElementByXPath(loja);
                     lojaListItem.Click();
                 });
                 MouseHandler.Click(addLojasButton);
@@ -196,13 +198,13 @@ namespace SAPTests.PageObjects
                     });
                     break;
                 case "Restringe Empresa Loja":
-                    WindowsElement checkboxRestringe = FindElementByName(feature);
+                    WindowsElement checkboxRestringe = FindElementByXPath(feature);
                     if (!VerifyCheckBoxIsOn(checkboxRestringe))
                         checkboxRestringe.Click();
                     break;
                 case "Incorporar Sugestão CD":
                     string checkboxName = "Incorporar Sugestão";
-                    WindowsElement checkboxIncorporar = FindElementByName(checkboxName);
+                    WindowsElement checkboxIncorporar = FindElementByXPath(checkboxName);
                     if (!VerifyCheckBoxIsOn(checkboxIncorporar))
                         checkboxIncorporar.Click();
                     break;
@@ -215,7 +217,7 @@ namespace SAPTests.PageObjects
         {
             BoundingRectangle cdPrincipalCombobox = new BoundingRectangle(359, 645, 551, 666);
             MouseHandler.Click(cdPrincipalCombobox);
-            WindowsElement chosenCd = FindElementByName(cdNome);
+            WindowsElement chosenCd = FindElementByXPath(cdNome);
             chosenCd.Click();
         }
 
@@ -269,7 +271,7 @@ namespace SAPTests.PageObjects
                             WinAppDriver.FillField(qtdeCompra.ToString());
                             KeyPresser.PressKey("RETURN");
                         }
-                        WindowsElement warning = FindElementByName("Atenção");
+                        WindowsElement warning = FindElementByXPath("Atenção");
                         if (warning != null)
                         {
                             ExitWindow("Atenção");
@@ -305,7 +307,7 @@ namespace SAPTests.PageObjects
 
         public void ClickGerarPedidos()
         {
-            AppiumWebElement geraPedidosButton = FindElementByName("Gera Pedidos");
+            AppiumWebElement geraPedidosButton = FindElementByXPath("Gera Pedidos");
             geraPedidosButton.Click();
         }
 
@@ -405,7 +407,7 @@ namespace SAPTests.PageObjects
         {
             BoundingRectangle tipoPedidoComboBox = new BoundingRectangle(299, 203, 316, 220);
             MouseHandler.Click(tipoPedidoComboBox);
-            WindowsElement listItem = FindElementByName(tipoPedido);
+            WindowsElement listItem = FindElementByXPath(tipoPedido);
             listItem.Click();
             KeyPresser.PressKey("RETURN");
         }
@@ -415,7 +417,7 @@ namespace SAPTests.PageObjects
             switch (tipoAcordo)
             {
                 case "DIFERENCA DE PRECO":
-                    WindowsElement tipoAcordoButton = FindElementByName("Tipo Acordo");
+                    WindowsElement tipoAcordoButton = FindElementByXPath("Tipo Acordo");
                     tipoAcordoButton.Click();
 
                     int qtdClicks = 7;
@@ -488,13 +490,13 @@ namespace SAPTests.PageObjects
             switch (tipoPrazoPagamento)
             {
                 case "Prazo Único":
-                    WindowsElement radioButtonPrazoPagamento = FindElementByName(tipoPrazoPagamento);
+                    WindowsElement radioButtonPrazoPagamento = FindElementByXPath(tipoPrazoPagamento);
                     radioButtonPrazoPagamento.Click();
                     KeyPresser.PressKey("TAB");
                     WinAppDriver.FillField(prazoPagamento);
                     break;
                 case "Prazo Fixo":
-                    radioButtonPrazoPagamento = FindElementByName(tipoPrazoPagamento);
+                    radioButtonPrazoPagamento = FindElementByXPath(tipoPrazoPagamento);
                     radioButtonPrazoPagamento.Click();
                     KeyPresser.PressKey("TAB");
                     WinAppDriver.FillField(prazoPagamento);
@@ -506,14 +508,14 @@ namespace SAPTests.PageObjects
 
         public void ClickButtonAcataSugerido()
         {
-            WindowsElement button = FindElementByName("Acata Sugerido");
+            WindowsElement button = FindElementByXPath("Acata Sugerido");
             button.Click();
             ExitWindow("Atenção");
         }
 
         public void SelectFirstItemWithQtdeCompraFilled()
         {
-            WindowsElement button = FindElementByName("OK");
+            WindowsElement button = FindElementByXPath("OK");
             button.Click();
             ClickOnProductGridLineDown(11);
             MouseHandler.Click(1080, 290);
@@ -543,7 +545,7 @@ namespace SAPTests.PageObjects
         {
             BoundingRectangle searchComboBox = new BoundingRectangle(157, 694, 174, 711);
             MouseHandler.Click(searchComboBox);
-            WindowsElement listItem = FindElementByName(searchParameter);
+            WindowsElement listItem = FindElementByXPath(searchParameter);
             listItem.Click();
         }
 
@@ -557,7 +559,7 @@ namespace SAPTests.PageObjects
             WindowsElement searchBtn = buttons[2];
             searchBtn.Click();
 
-            WindowsElement middleElement = FindElementByName("Open");
+            WindowsElement middleElement = FindElementByXPath("Open");
             middleElement.Click();
 
             KeyPresser.PressKeys("TAB");
@@ -643,7 +645,7 @@ namespace SAPTests.PageObjects
 
         public void ClickOnProductGridLineDown(int clicks)
         {
-            WindowsElement button = FindElementByName("Line down");
+            WindowsElement button = FindElementByXPath("Line down");
             for (int i = 0; i < clicks; i++)
             {
                 button.Click();
@@ -853,7 +855,7 @@ namespace SAPTests.PageObjects
         private void FilterEmpresasPromocao(string listItem)
         {
             MouseHandler.Click(new BoundingRectangle(808, 108, 825, 125));
-            WindowsElement option = FindElementByName(listItem);
+            WindowsElement option = FindElementByXPath(listItem);
             option.Click();
             KeyPresser.PressKey("TAB");
         }
@@ -862,7 +864,7 @@ namespace SAPTests.PageObjects
         {
             MouseHandler.Click(new BoundingRectangle(700, 108, 717, 125));
             embalagem = embalagem.Replace(" ", "  ").ToUpper();
-            WindowsElement listItem = FindElementByName(embalagem);
+            WindowsElement listItem = FindElementByXPath(embalagem);
             listItem.Click();
         }
 

@@ -83,7 +83,7 @@ namespace SAPTests.Helpers
             return null;
         }
 
-        public static WindowsElement FindElementByXpath(string name, int milliseconds = 1000, WindowsDriver<WindowsElement> session = null)
+        public static WindowsElement FindElementByName(string name, int milliseconds = 1000, WindowsDriver<WindowsElement> session = null)
         {
             if (session == null)
             {
@@ -120,6 +120,46 @@ namespace SAPTests.Helpers
 
             // Element not found after max attempts
             Console.WriteLine($"Element with name '{name}' not found after {maxAttempts} attempts.");
+            return null;
+        }
+
+        public static WindowsElement FindElementByXPath(string xpath, int milliseconds = 1000, WindowsDriver<WindowsElement> session = null)
+        {
+            if (session == null)
+            {
+                session = Global.appSession;
+            }
+
+            const int maxAttempts = 10;
+            int attempts = 1;
+
+            while (attempts <= maxAttempts)
+            {
+                Thread.Sleep(milliseconds);
+                try
+                {
+                    WindowsElement element = session.FindElementByXPath(xpath);
+                    if (element != null)
+                    {
+                        // Element found, return it
+                        return element;
+                    }
+                }
+                catch (NoSuchElementException)
+                {
+                    // Element not found, continue trying
+                    attempts++;
+                }
+                catch (Exception e)
+                {
+                    // Log any other exceptions and retry
+                    Console.WriteLine($"Exception occurred while finding element by xpath {xpath}, attempt {attempts}: {e.Message}");
+                    attempts++;
+                }
+            }
+
+            // Element not found after max attempts
+            Console.WriteLine($"Element with xpath '{xpath}' not found after {maxAttempts} attempts.");
             return null;
         }
 
@@ -248,7 +288,7 @@ namespace SAPTests.Helpers
 
         public static void ConfirmWindow(string windowName, int buttonIndex = 0, int timeout = 1000)
         {
-            WindowsElement foundWindow = FindElementByXpath(windowName, timeout);
+            WindowsElement foundWindow = FindElementByXPath(windowName, timeout);
             ReadOnlyCollection<AppiumWebElement> buttons = foundWindow.FindElementsByClassName("Button");
             AppiumWebElement button = buttons[buttonIndex];
             button.Click();

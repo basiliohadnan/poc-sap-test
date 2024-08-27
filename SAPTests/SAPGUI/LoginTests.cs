@@ -1,25 +1,27 @@
 ﻿using SAPTests.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium.Appium.Windows;
-using Starline;
-using static SAPTests.Helpers.ElementHandler;
 
-namespace SAPTests
+using static SAPTests.Helpers.ElementHandler;
+using Starline;
+using DocumentFormat.OpenXml.Bibliography;
+using OpenQA.Selenium;
+
+namespace Login
 {
     [TestClass]
     public class LoginTests : WinAppDriver
     {
         protected string dataFilePath;
-        protected ElementHandler elementHandler;
+        protected ElementHandler ElementHandler;
         protected string sheet;
 
         public LoginTests()
         {
             sheet = "login";
-            //dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "SAP.xlsx"));
-            dataFilePath = @"C:\Users\basil\OneDrive\Documentos\GitHub\LIT\poc-sap-test\SAPTests\dataset";
+            dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "SAP.xlsx"));
             GetAppConfig();
-            elementHandler = new ElementHandler();
+            ElementHandler = new ElementHandler();
         }
 
         private void GetAppConfig()
@@ -49,14 +51,9 @@ namespace SAPTests
             KeyPresser.PressKey("RETURN");
         }
 
-        protected void SetAppSession(string className)
-        {
-            SetAppSession(className);
-        }
-
         protected void OpenMenu(string menuName)
         {
-            WindowsElement menuItem = FindElementByName(menuName);
+            WindowsElement menuItem = FindElementByXPath(menuName);
             menuItem.Click();
         }
 
@@ -69,21 +66,28 @@ namespace SAPTests
             string paramValue = Global.appPath;
             string expectedResult = "App aberto.";
 
-            lgsID = Global.processTest.StartStep(stepDescription, logMsg:
-                $"Tentando {stepDescription}", paramName: paramName, paramValue: paramValue);
-            Initialize();
-            printFileName = Global.processTest.CaptureWholeScreen();
-            string welcomeWindowName = "Conexão de Sistemas SAP";
-            WindowsElement welcomeWindow = FindElementByName(welcomeWindowName);
-            Assert.IsNotNull(welcomeWindow);
-            if (welcomeWindow == null)
+            //lgsID = Global.processTest.StartStep(stepDescription, logMsg:
+            //    $"Tentando {stepDescription}", paramName: paramName, paramValue: paramValue);
+            try
+            {
+                Initialize();
+                //Name	LIT - S/4HANA 2022 FPS01
+                //ControlType Text(50020)
+
+                var element = FindElementsByName("SAP Logon 770");
+                //WindowsElement element = FindElementByXpath("//Text[@Name='LIT - S/4HANA 2022 FPS01']");
+                Assert.IsNotNull(element, "The SAP Logon 770 title bar is not present.");
+                printFileName = Global.processTest.CaptureWholeScreen();
+
+            }
+            catch (Exception ex)
             {
                 printFileName = Global.processTest.CaptureWholeScreen();
-                Global.processTest.EndStep(lgsID, status: "erro", printPath: printFileName, logMsg:
-                    $"Erro ao tentar {stepDescription}.");
+                //Global.processTest.EndStep(lgsID, status: "erro", printPath: printFileName, logMsg:
+                //    $"Erro ao tentar {stepDescription}.");
                 throw new Exception($"Erro ao tentar {stepDescription}.");
+                //Global.processTest.EndStep(lgsID, printPath: printFileName, logMsg: expectedResult);
             }
-            Global.processTest.EndStep(lgsID, printPath: printFileName, logMsg: expectedResult);
         }
 
         private void FillCredentials(DataFetch dataFetch, string testName, int filialIndex = 0)
@@ -99,10 +103,12 @@ namespace SAPTests
             lgsID = Global.processTest.StartStep(stepDescription, logMsg: $"Tentando {stepDescription}",
                 paramName: "username, password", paramValue: $"{username}, {password}");
             Authenticate(username, password);
-            SetAppSession(className);
+            
+            string name = "SAP Logon 770";
+            SetAppSession(name);
 
             string appName = "Application";
-            WindowsElement appMenu = FindElementByName(appName);
+            WindowsElement appMenu = FindElementByXPath(appName);
             Assert.IsNotNull(appMenu);
 
             if (appMenu == null)
@@ -137,25 +143,25 @@ namespace SAPTests
         [TestMethod, TestCategory("done")]
         public void AbrirAplicacao()
         {
-            string testName = TestHandler.GetCurrentMethodName();
-            if (TestHandler.SetExecutionControl(dataFilePath, sheet, testName) == "")
+            string test = TestHandler.GetCurrentMethodName();
+            if (TestHandler.SetExecutionControl(dataFilePath, sheet, test) == "")
             {
-                TestHandler.StartTest(Global.dataFetch, testName);
+                TestHandler.StartTest(Global.dataFetch, test);
                 try
                 {
-                    TestHandler.DoTest(Global.dataFetch, testName);
-                    TestHandler.DefineSteps(testName);
-                    Login(Global.dataFetch, testName);
-                    ExcelHelper.UpdateTestResult(dataFilePath, sheet, testName, "passed");
+                    TestHandler.DoTest(Global.dataFetch, test);
+                    TestHandler.DefineSteps(test);
+                    Login(Global.dataFetch, test);
+                    ExcelHelper.UpdateTestResult(dataFilePath, sheet, test, "passed");
                 }
                 catch (Exception ex)
                 {
-                    ExcelHelper.UpdateTestResult(dataFilePath, sheet, testName, "failed");
+                    ExcelHelper.UpdateTestResult(dataFilePath, sheet, test, "failed");
                     throw;
                 }
                 finally
                 {
-                    TestHandler.EndTest(Global.dataFetch, testName);
+                    TestHandler.EndTest(Global.dataFetch, test);
                 }
             }
         }
