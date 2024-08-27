@@ -1,27 +1,30 @@
-﻿using OpenQA.Selenium.Appium.Windows;
+﻿using System.Runtime.InteropServices;
+using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Appium;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static SAPTests.Helpers.ElementHandler;
 using Starline;
-using SAPTests.Helpers;
+using OpenQA.Selenium;
+using System.Text;
+
 
 namespace SAPTests.Helpers
 {
     public class WinAppDriver
     {
-        protected string dataSetFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "GerenciadordeCompras.xlsx"));
+        protected string dataFilePath = FileHelper.GetFullPathFromBase(Path.Combine("..", "..", "..", "..", "SAPTests", "dataset", "SAP.xlsx"));
 
         protected void StartWinAppDriver()
         {
             string queryName = "GetAppConfig";
-            DataFetch dataFetch = new DataFetch(ConnType: "Excel", ConnXLS: dataSetFilePath);
-            dataFetch.NewQuery(
+            Global.dataFetch = new DataFetch(ConnType: "Excel", ConnXLS: dataFilePath);
+            Global.dataFetch.NewQuery(
                 QueryName: queryName,
-                    QueryText: $"SELECT * FROM [Config$]"
+                    QueryText: $"SELECT * FROM [config$]"
                     );
 
-            string winAppDriverPath = dataFetch.GetValue("WINAPPDRIVERPATH", queryName);
+            string winAppDriverPath = Global.dataFetch.GetValue("WINAPPDRIVERPATH", queryName);
 
             if (Process.GetProcessesByName("WinAppDriver").Length == 0)
             {
@@ -60,20 +63,85 @@ namespace SAPTests.Helpers
         protected void InitializeAppSession(string appPath)
         {
             Process process = Process.Start(appPath);
-            string appName = "Conexão de Sistemas SAP";
-            WindowsElement appWindow = FindElementByName(appName, session: Global.winSession);
-            Assert.IsNotNull(appWindow);
 
-            // Get the window handle of the app's process
-            nint mainWindowHandle = process.MainWindowHandle;
-            
+            // Wait until the process is fully started and the splash screen has passed
+            WaitSeconds(10);
+
+            // Find the correct main window handle
+            nint mainWindowHandle = IntPtr.Zero;
+            int maxRetries = 30; // Maximum retries (30 * 1s = 30 seconds)
+            while (maxRetries > 0 && mainWindowHandle == IntPtr.Zero)
+            {
+                mainWindowHandle = FindMainWindowHandle(process);
+                if (mainWindowHandle != IntPtr.Zero)
+                    break;
+
+                WaitSeconds(1);
+                maxRetries--;
+            }
+
+            if (mainWindowHandle == IntPtr.Zero)
+            {
+                throw new Exception("Main window handle not found.");
+            }
+
             // Identify the root level window of the app's process
             AppiumOptions rootCapabilities = new AppiumOptions();
-
-            // Use the window handle as the appTopLevelWindow capability
             rootCapabilities.AddAdditionalCapability("appTopLevelWindow", mainWindowHandle.ToInt64().ToString("x"));
             Global.appSession = new WindowsDriver<WindowsElement>(new Uri("http://127.0.0.1:4723"), rootCapabilities);
+
+            var everyElementFromAppSession = Global.appSession.FindElements(By.XPath("//*"));
         }
+
+        // Method to find the main window handle of the process
+        private nint FindMainWindowHandle(Process process)
+        {
+            nint windowHandle = IntPtr.Zero;
+            foreach (ProcessThread thread in process.Threads)
+            {
+                EnumThreadWindows((uint)thread.Id, (hWnd, lParam) =>
+                {
+                    if (IsMainWindow(hWnd))
+                    {
+                        windowHandle = hWnd;
+                        return false; // Stop enumeration
+                    }
+                    return true; // Continue enumeration
+                }, IntPtr.Zero);
+
+                if (windowHandle != IntPtr.Zero)
+                    break;
+            }
+            return windowHandle;
+        }
+
+        // Helper method to determine if a window handle is the main application window
+        private bool IsMainWindow(nint handle)
+        {
+            const int nChars = 256;
+            StringBuilder Buff = new StringBuilder(nChars);
+            if (GetWindowText(handle, Buff, nChars) > 0)
+            {
+                string windowTitle = Buff.ToString();
+                // Ensure the window title corresponds to the SAP Logon main window
+                return windowTitle.Contains("SAP Logon") && !windowTitle.Contains("Splash");
+            }
+            return false;
+        }
+
+        // P/Invoke declarations
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern int GetWindowText(nint hWnd, StringBuilder lpString, int nMaxCount);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool EnumThreadWindows(uint dwThreadId, EnumThreadWndProc lpfn, nint lParam);
+
+        delegate bool EnumThreadWndProc(nint hWnd, nint lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool IsWindowVisible(nint hWnd);
+
 
         protected void SetAppSession(string className)
         {
