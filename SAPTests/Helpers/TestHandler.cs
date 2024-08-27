@@ -1,4 +1,5 @@
-﻿using Starline;
+﻿
+using Starline;
 using System.Reflection;
 
 namespace SAPTests.Helpers
@@ -11,7 +12,7 @@ namespace SAPTests.Helpers
             return method.Name;
         }
 
-        public static string SetExecutionControl(string dataFilePath, string sheet, string testName)
+        public static string SetExecutionControl(string dataFilePath, string sheet, string name)
         {
             string executionType;
             try
@@ -21,7 +22,7 @@ namespace SAPTests.Helpers
             catch
             {
                 executionType = "2";
-                ExcelHelper.UpdateTestResult(dataFilePath, sheet, testName, "");
+                ExcelHelper.UpdateTestResult(dataFilePath, sheet, name, "");
             }
 
             if (Global.firstRun)
@@ -35,30 +36,33 @@ namespace SAPTests.Helpers
 
             Global.dataFetch = new DataFetch(ConnType: "Excel", ConnXLS: dataFilePath);
             Global.dataFetch.NewQuery(
-                QueryName: testName,
-                QueryText: $"SELECT * FROM [{sheet}$] WHERE testName = {testName}"
+                QueryName: name,
+                QueryText: $"SELECT * FROM [{sheet}$] WHERE name = '{name}'"
             );
-            string result = Global.dataFetch.GetValue("RESULT", testName);
+            string result = Global.dataFetch.GetValue("RESULT", name);
             return result;
         }
 
-        public static void StartTest(DataFetch dataFetch, string testName)
+        public static void StartTest(DataFetch dataFetch, string name)
         {
-            string scenarioName = dataFetch.GetValue("SCENARIONAME", testName);
-            string testType = dataFetch.GetValue("TESTTYPE", testName);
-            string analystName = dataFetch.GetValue("ANALYSTNAME", testName);
-            string testDesc = dataFetch.GetValue("TESTDESC", testName);
-            int reportID;
-            try
-            {
-                reportID = int.Parse(Environment.GetEnvironmentVariable("reportID"));
-                Console.WriteLine(reportID);
-            }
-            catch
-            {
-                reportID = int.Parse(dataFetch.GetValue("REPORTID", testName));
-            }
-            Global.processTest.StartTest(Global.customerName, Global.suiteName, scenarioName, testName, testType, analystName, testDesc, reportID);
+            string scenario = dataFetch.GetValue("SCENARIO", name);
+            string type = dataFetch.GetValue("TYPE", name);
+            string analyst = dataFetch.GetValue("ANALYST", name);
+            string description = dataFetch.GetValue("DESCRIPTION", name);
+            string customer = dataFetch.GetValue("CUSTOMER", name);
+            string suite = dataFetch.GetValue("SUITE", name);
+            //int reportID;
+            //try
+            //{
+            //    reportID = int.Parse(Environment.GetEnvironmentVariable("reportID"));
+            //    Console.WriteLine(reportID);
+            //}
+            //catch
+            //{
+            //    reportID = int.Parse(dataFetch.GetValue("REPORTID", name));
+            //}
+
+            //Global.processTest.StartTest(customer, suite, scenario, name, type, analyst, description, reportID);
         }
 
         public static void DoTest(DataFetch dataFetch, string testName)
@@ -66,13 +70,13 @@ namespace SAPTests.Helpers
             string preCondition = dataFetch.GetValue("PRECONDITION", testName);
             string postCondition = dataFetch.GetValue("POSTCONDITION", testName);
             string inputData = dataFetch.GetValue("INPUTDATA", testName);
-            Global.processTest.DoTest(preCondition, postCondition, inputData);
+            //Global.processTest.DoTest(preCondition, postCondition, inputData);
         }
 
         public static void EndTest(DataFetch dataFetch, string testName, bool closeWindow = true)
         {
-            int reportID = int.Parse(dataFetch.GetValue("REPORTID", testName));
-            Global.processTest.EndTest(reportID, testName);
+            //int reportID = int.Parse(dataFetch.GetValue("REPORTID", testName));
+            //Global.processTest.EndTest(reportID, testName);
             if (closeWindow == true)
             {
                 WindowHandler.CloseWindow();
@@ -84,10 +88,10 @@ namespace SAPTests.Helpers
             switch (testName)
             {
                 //App Login Screen
-                case "RealizarLogin":
-                    Global.processTest.DoStep("Abrir app");
-                    Global.processTest.DoStep("Realizar login do analista");
-                    Global.processTest.DoStep("Validar tela principal exibida");
+                case "AbrirAplicacao":
+                    //Global.processTest.DoStep("Abrir app");
+                    //Global.processTest.DoStep("Realizar login do analista");
+                    //Global.processTest.DoStep("Validar tela principal exibida");
                     break;
 
                 default:
