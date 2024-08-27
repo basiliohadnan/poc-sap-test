@@ -12,9 +12,9 @@ public class ExcelHelper
         _sheetName = sheetName;
     }
 
-    public static void ResetTestResults(string dataSetFilePath, string sheet = "")
+    public static void ResetTestResults(string dataFilePath, string sheet = "")
     {
-        using (var workbook = new XLWorkbook(dataSetFilePath))
+        using (XLWorkbook workbook = new XLWorkbook(dataFilePath))
         {
             // Determine the sheets to process
             var sheets = string.IsNullOrEmpty(sheet)
@@ -43,11 +43,11 @@ public class ExcelHelper
         }
     }
 
-    public static void UpdateTestResult(string dataSetFilePath, string sheet, string testName, string result)
+    public static void UpdateTestResult(string dataFilePath, string sheet, string name, string result)
     {
-        using (var workbook = new XLWorkbook(dataSetFilePath))
+        using (var workbook = new XLWorkbook(dataFilePath))
         {
-            var worksheet = workbook.Worksheet(sheet);
+            IXLWorksheet worksheet = workbook.Worksheet(sheet);
             var resultColumn = worksheet.Row(1).CellsUsed().FirstOrDefault(c => c.GetValue<string>().Equals("result", StringComparison.OrdinalIgnoreCase))?.Address.ColumnNumber;
 
             if (resultColumn == null)
@@ -56,11 +56,11 @@ public class ExcelHelper
             }
 
             // Skip header row
-            var rows = worksheet.RowsUsed().Skip(1);
-            foreach (var row in rows)
+            IEnumerable<IXLRow> rows = worksheet.RowsUsed().Skip(1);
+            foreach (IXLRow row in rows)
             {
-                // Assuming the testName is in column C
-                if (string.Equals(row.Cell(3).GetValue<string>().Trim(), testName, StringComparison.OrdinalIgnoreCase))
+                // Assuming the name is in column C
+                if (string.Equals(row.Cell(3).GetValue<string>().Trim(), name, StringComparison.OrdinalIgnoreCase))
                 {
                     row.Cell(resultColumn.Value).Value = result;
                     break;
